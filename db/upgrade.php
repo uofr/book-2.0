@@ -58,6 +58,16 @@ function xmldb_book_upgrade($oldversion) {
             $dbman->rename_field($table, $field, 'intro');
         }
 
+		//change numbering - old book indent setting was 0, now 3
+        $rs = $DB->get_recordset('book', array('numbering'=>0), '', 'id,numbering');
+        foreach ($rs as $b) {
+            $b->numbering       = 3;
+            $DB->update_record('book', $b);
+            upgrade_set_timeout();
+        }
+        unset($b);
+        $rs->close();
+
         // book savepoint reached
         upgrade_mod_savepoint(true, 2010120801, 'book');
     }
